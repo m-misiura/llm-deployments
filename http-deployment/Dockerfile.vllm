@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+RUN apt-get update && \
+    apt-get install -y git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set up a Python virtual environment and install necessary packages
+RUN python -m venv /tmp/venv && \
+    /tmp/venv/bin/pip install -U "huggingface_hub[cli]" &&\
+    /tmp/venv/bin/pip install git+https://github.com/caikit/caikit-nlp &&\  
+    mkdir /.cache &&\
+    chmod -R 777 /.cache
+
+# Set the entry point
+ENTRYPOINT ["top", "-b"]
