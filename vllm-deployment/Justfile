@@ -1,0 +1,48 @@
+# Justfile
+
+# Set up a service account
+create-service-account:
+    oc apply -f service_account.yaml
+
+# Set up model container
+create-model-container:
+    oc apply -f llm_model_container.yaml
+
+# Set up vllm serving runtime
+create-vllm-serving-runtime:
+    oc apply -f vllm_serving_runtime.yaml
+
+# Task to run vllm_serving_runtime.yaml
+create-vllm-isvc:
+    oc apply -f vllm_isvc.yaml
+
+# Task to run all YAML files
+create-vllm-all: create-service-account create-model-container create-vllm-serving-runtime create-vllm-isvc
+
+# Delete a service account
+delete-service-account:
+    oc delete -f service_account.yaml
+
+# Delete model container
+delete-model-container:
+    oc delete -f llm_model_container.yaml
+
+# Delete vllm serving runtime
+delete-vllm-serving-runtime:
+    oc delete -f vllm_serving_runtime.yaml
+
+# Delete vllm isvc
+delete-vllm-isvc:
+    oc delete -f vllm_isvc.yaml
+
+# Task to delete all YAML files
+vllm-delete-all: delete-service-account delete-model-container delete-vllm-serving-runtime delete-vllm-isvc
+
+# Task to run curl command with a user-specified prompt
+curl-model-endpoint prompt:
+    # Ensure the script is executable
+    chmod +x curl_model_endpoint.sh
+    # Run the shell script with the prompt
+    ./curl_model_endpoint.sh "{{prompt}}"
+
+
