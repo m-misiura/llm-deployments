@@ -32,6 +32,12 @@ spec:
           secret:
             secretName: gpt2
             defaultMode: 256
+        - name: ca-cert
+          secret:
+            secretName: user-one-token-rwz8b
+            items:
+              - key: ca.crt
+                path: ca.crt
       containers:
         - resources:
             limits:
@@ -63,6 +69,8 @@ spec:
               value: /tls/server/tls.key
             - name: TLS_CERT_PATH
               value: /tls/server/tls.crt
+            - name: TLS_CLIENT_CA_CERT_PATH
+              value: /tls/ca/ca.crt
             - name: RUST_BACKTRACE
               value: full
             - name: RUST_LOG
@@ -90,6 +98,9 @@ spec:
             - name: server-tls
               readOnly: true
               mountPath: /tls/server
+            - name: ca-cert
+              readOnly: true
+              mountPath: /tls/ca
           terminationMessagePolicy: File
           image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:latest'
 
@@ -126,9 +137,11 @@ data:
       caikit:
         cert_path: /tls/server/tls.crt
         key_path: /tls/server/tls.key
+        client_ca_cert_path: /tls/ca/ca.crt
       orchestrator:
         cert_path: /tls/server/tls.crt
         key_path: /tls/server/tls.key
+        client_ca_cert_path: /tls/ca/ca.crt
 
 #################################### Service Spec #######################################
 ---
