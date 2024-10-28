@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pod-istio
+  namespace: test
+  labels:
+    run: debug-pod
+    sidecar.istio.io/inject: "true"  # Enable Istio sidecar injection
+  annotations:
+    sidecar.istio.io/inject: "true"
+spec:
+  serviceAccountName: user-one  # Use the same service account as your working external calls
+  containers:
+  - name: debug
+    image: quay.io/fedora/fedora:latest
+    command: ["sleep", "3600"]
+    securityContext:
+      capabilities:
+        drop:
+        - MKNOD

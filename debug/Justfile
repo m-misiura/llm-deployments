@@ -1,0 +1,11 @@
+# Create a debug pod
+create-debug-pod:
+    oc run debug-pod --image=quay.io/fedora/fedora:latest -n test -- sleep 3600
+
+# Install grpcurl and curl in the debug pod
+install-tools-in-debug-pod:
+    oc exec -n test debug-pod-istio -- bash -c "dnf install -y grpcurl curl"
+
+# Delete the debug pod
+delete-debug-pod:
+    oc delete pod debug-pod
