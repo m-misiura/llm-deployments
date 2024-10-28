@@ -4,7 +4,7 @@ metadata:
   name: regex-detector
   annotations:
     openshift.io/display-name: regex-detector
-    #security.opendatahub.io/enable-auth: "true"
+    security.opendatahub.io/enable-auth: "false"
     serving.knative.openshift.io/enablePassthrough: "true"
     sidecar.istio.io/inject: "true"
     sidecar.istio.io/rewriteAppHTTPProbers: "true"
@@ -16,7 +16,7 @@ spec:
     minReplicas: 1
     containers:
       - name: kserve-container
-        image: quay.io/rh-ee-mmisiura/detector-regex:trial
+        image: quay.io/rh-ee-mmisiura/regex-detector:simplified_v2
         ports:
           - containerPort: 8000
         readinessProbe:

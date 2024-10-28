@@ -6,7 +6,7 @@ metadata:
     opendatahub.io/dashboard: 'true'
   annotations:
     openshift.io/display-name: gpt2
-    security.opendatahub.io/enable-auth: 'true'
+    security.opendatahub.io/enable-auth: 'false'
     serving.knative.openshift.io/enablePassthrough: 'true'
     sidecar.istio.io/inject: 'true'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
@@ -35,3 +35,11 @@ spec:
       - key: nvidia.com/gpu
         operator: Exists
         effect: NoSchedule
+# service:
+#       annotations:
+#         # Optionally specify an AWS LoadBalancer type
+#         service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # or "classic" based on your requirement
+#       ports:
+#         - name: grpc
+#           port: 50051        # gRPC port, if needed
+#           targetPort: 50051

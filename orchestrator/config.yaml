@@ -28,16 +28,6 @@ spec:
           configMap:
             name: fms-orchestr8-config-nlp
             defaultMode: 420
-        - name: server-tls
-          secret:
-            secretName: gpt2
-            defaultMode: 256
-        - name: ca-cert
-          secret:
-            secretName: user-one-token-rwz8b
-            items:
-              - key: ca.crt
-                path: ca.crt
       containers:
         - resources:
             limits:
@@ -50,7 +40,7 @@ spec:
             httpGet:
               path: /health
               port: 8033
-              scheme: HTTPS
+              scheme: HTTP
             initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 20
@@ -63,14 +53,8 @@ spec:
           env:
             - name: ORCHESTRATOR_CONFIG
               value: /config/config.yaml
-            - name: HTTPS_PORT
+            - name: HTTP_PORT
               value: '8033'
-            - name: TLS_KEY_PATH
-              value: /tls/server/tls.key
-            - name: TLS_CERT_PATH
-              value: /tls/server/tls.crt
-            - name: TLS_CLIENT_CA_CERT_PATH
-              value: /tls/ca/ca.crt
             - name: RUST_BACKTRACE
               value: full
             - name: RUST_LOG
@@ -86,7 +70,7 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           ports:
-            - name: https
+            - name: http
               containerPort: 8033
               protocol: TCP
           imagePullPolicy: Always
@@ -95,14 +79,8 @@ spec:
               readOnly: true
               mountPath: /config/config.yaml
               subPath: config.yaml
-            - name: server-tls
-              readOnly: true
-              mountPath: /tls/server
-            - name: ca-cert
-              readOnly: true
-              mountPath: /tls/ca
           terminationMessagePolicy: File
-          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:latest'
+          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0'
 
 #################################### Configmap ##########################################
 ---
@@ -125,24 +103,13 @@ data:
         tls: caikit
     detectors:
       regex:
+        type: text_contents
         service:
-          hostname: https://regex-detector-test.apps.rosa.mac-trustyai.swih.p3.openshiftapps.com/api/v1/text/contents
+          hostname: regex-detector-test.apps.rosa.mac-trustyai.swih.p3.openshiftapps.com
           port: 443
           protocol: https
         chunker_id: whole_doc_chunker
         default_threshold: 0.5
-    passthrough_headers: 
-      - Authorization
-    tls:
-      caikit:
-        cert_path: /tls/server/tls.crt
-        key_path: /tls/server/tls.key
-        client_ca_cert_path: /tls/ca/ca.crt
-      orchestrator:
-        cert_path: /tls/server/tls.crt
-        key_path: /tls/server/tls.key
-        client_ca_cert_path: /tls/ca/ca.crt
-
 #################################### Service Spec #######################################
 ---
 kind: Service
@@ -156,12 +123,12 @@ spec:
   ipFamilies:
     - IPv4
   ports:
-    - name: https
+    - name: http
       protocol: TCP
       port: 8033
       targetPort: 8033
   internalTrafficPolicy: Cluster
-  type: ClusterIP
+  type: LoadBalancer
   ipFamilyPolicy: SingleStack
   sessionAffinity: None
   selector:
@@ -184,8 +151,8 @@ spec:
     name: fms-orchestr8-nlp
     weight: 100
   port:
-    targetPort: https
+    targetPort: http
   tls:
-    termination: reencrypt
+    termination: edge
     insecureEdgeTerminationPolicy: Redirect
   wildcardPolicy: None
