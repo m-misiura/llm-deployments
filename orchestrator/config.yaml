@@ -113,6 +113,8 @@ data:
           protocol: https
         chunker_id: whole_doc_chunker
         default_threshold: 0.5
+    passthrough_headers:
+      - Authorization
 #################################### Service Spec #######################################
 ---
 kind: Service
