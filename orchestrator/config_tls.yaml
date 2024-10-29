@@ -32,6 +32,10 @@ spec:
           configMap:
             name: fms-orchestr8-config-nlp
             defaultMode: 420
+        - name: server-tls
+          secret:
+            secretName: gpt2
+            defaultMode: 256
       containers:
         - resources:
             limits:
@@ -63,6 +67,10 @@ spec:
               value: full
             - name: RUST_LOG
               value: 'fms_guardrails_orchestr8=debug'
+            - name: TLS_CERT_PATH
+              value: /tls/server/tls.crt
+            - name: TLS_KEY_PATH
+              value: /tls/server/tls.key
           securityContext:
             capabilities:
               drop:
@@ -83,6 +91,9 @@ spec:
               readOnly: true
               mountPath: /config/config.yaml
               subPath: config.yaml
+            - name: server-tls
+              readOnly: true
+              mountPath: /tls/server
           terminationMessagePolicy: File
           image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0'
 
@@ -103,6 +114,7 @@ data:
       service:
         hostname: gpt2-predictor.test.svc.cluster.local 
         port: 80
+        tls: caikit
     detectors:
       regex:
         type: text_contents
@@ -113,6 +125,11 @@ data:
         default_threshold: 0.5
     passthrough_headers:
       - Authorization
+    tls:
+      caikit:
+        cert_path: /tls/server/tls.crt
+        key_path: /tls/server/tls.key
+
 #################################### Service Spec #######################################
 ---
 kind: Service
