@@ -20,5 +20,6 @@ oc new-project test
      - navigate to `orchestrator`
     - run `config.yaml`
 
-5. You should eventually see the following pods within the `test` namespace
+5. You should eventually see the following pods within the `test` namespace: 
+![](images/pod-screenshot.png)
 
