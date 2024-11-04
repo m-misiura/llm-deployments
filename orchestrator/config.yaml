@@ -45,8 +45,8 @@ spec:
               path: /health
               port: 8034
               scheme: HTTP
-            initialDelaySeconds: 5
-            timeoutSeconds: 1
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
             periodSeconds: 20
             successThreshold: 1
             failureThreshold: 3
@@ -60,9 +60,9 @@ spec:
             - name: HTTP_PORT
               value: '8033'
             - name: RUST_BACKTRACE
-              value: full
+              value: 'full'
             - name: RUST_LOG
-              value: 'fms_guardrails_orchestr8=debug'
+              value: 'fms_guardrails_orchestr8=trace,tower_grpc=debug'
           securityContext:
             capabilities:
               drop:
@@ -84,7 +84,7 @@ spec:
               mountPath: /config/config.yaml
               subPath: config.yaml
           terminationMessagePolicy: File
-          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0'
+          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0-grpcurl-printnlp_gen_unary_orch_health'
 
 #################################### Configmap ##########################################
 ---
@@ -102,17 +102,21 @@ data:
       provider: nlp
       service:
         hostname: gpt2-predictor.test.svc.cluster.local 
-        port: 80
+        port: 8085
+        grpc:
+          service_name: "caikit.runtime.Nlp.NlpService"
+          method_name: "TextGenerationTaskPredict"
     detectors:
       regex:
         type: text_contents
         service:
           hostname: regex-detector-predictor.test.svc.cluster.local
-          port: 80
+          port: 8000
         chunker_id: whole_doc_chunker
         default_threshold: 0.5
-    passthrough_headers:
-      - Authorization
+    # passthrough_headers:
+    #   - Authorization
+    #   - mm-model-id
 #################################### Service Spec #######################################
 ---
 kind: Service
@@ -131,14 +135,20 @@ spec:
       port: 8033
       targetPort: 8033
   internalTrafficPolicy: Cluster
-  type: LoadBalancer
+  # type: LoadBalancer
+  # ipFamilyPolicy: SingleStack
+  # sessionAffinity: None
+  # selector:
+  #   app: fmstack-nlp
+  #   component: fms-orchestr8-nlp
+  #   deploy-name: fms-orchestr8-nlp
+  type: ClusterIP
   ipFamilyPolicy: SingleStack
   sessionAffinity: None
   selector:
     app: fmstack-nlp
     component: fms-orchestr8-nlp
     deploy-name: fms-orchestr8-nlp
-
 #################################### Route Spec #########################################
 ---
 kind: Route

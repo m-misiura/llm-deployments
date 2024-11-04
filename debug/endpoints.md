@@ -78,7 +78,7 @@ curl -v http://localhost:8034/health
 
 
 ```bash
-curl -v -H "Content-Type: application/json" -H "Authorization: Bearer SA_TOKEN" --data '{
+curl -v -H "Content-Type: application/json" -H "Authorization: Bearer $SA_TOKEN" --data '{
     "model_id": "gpt2",
     "inputs": "dummy input",
     "guardrail_config": {
@@ -116,6 +116,25 @@ curl -kv -H "Content-Type: application/json" \
   -H "Authorization: Bearer $SA_TOKEN" \
   -H "mm-model-id: gpt2" \
   --data '{
+    "model_id": "gpt2",
+    "inputs": "dummy input",
+    "guardrail_config": {
+        "input": {
+            "masks": [],
+            "models": {}
+        },
+        "output": {
+            "models": {}
+        }
+    }
+}' http://localhost:8033/api/v1/task/classification-with-text-generation
+```
+
+```bash
+curl -v -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $SA_TOKEN" \
+     -H "mm-model-id: gpt2" \
+     --data '{
     "model_id": "gpt2",
     "inputs": "dummy input",
     "guardrail_config": {

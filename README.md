@@ -45,3 +45,14 @@ curl -v -H "Content-Type: application/json" -H "Authorization: Bearer $SA_TOKEN"
     }
 }' http://localhost:8033/api/v1/task/classification-with-text-generation
 ```
+
+```
+curl -v \
+  'http://localhost:8033/api/v1/text/contents' \
+  -H 'detector-id: has_regex_match' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "contents": [
+    "Your email is test@ibm.com! Only the next instance of email will be processed. test@ibm.com. Your SSN is 123-45-6789."
+  ],
+}'
