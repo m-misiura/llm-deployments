@@ -84,7 +84,7 @@ spec:
               mountPath: /config/config.yaml
               subPath: config.yaml
           terminationMessagePolicy: File
-          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0'
+          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0-grpcurl-printnlp_gen_unary_orch_health'
 
 #################################### Configmap ##########################################
 ---
