@@ -1,0 +1,22 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: gpt2-predictor-direct
+  namespace: test
+spec:
+  hosts:
+  - gpt2-predictor.test.svc.cluster.local
+  gateways:
+  - knative-serving/knative-ingress-gateway
+  - knative-serving/knative-local-gateway
+  http:
+  - match:
+    - authority:
+        regex: "gpt2-predictor[.]test[.]svc[.]cluster[.]local.*"
+      gateways:
+      - knative-serving/knative-local-gateway
+    route:
+    - destination:
+        host: gpt2-predictor-00001-private.test.svc.cluster.local
+        port:
+          number: 8085

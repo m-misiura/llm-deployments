@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: gpt2-predictor
+  namespace: test
+spec:
+  hosts:
+  - gpt2-predictor.test.svc.cluster.local
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: gpt2-predictor-00001.test.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: gpt2-predictor
+  namespace: test
+spec:
+  host: gpt2-predictor.test.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE

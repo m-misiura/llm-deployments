@@ -84,7 +84,7 @@ spec:
               mountPath: /config/config.yaml
               subPath: config.yaml
           terminationMessagePolicy: File
-          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0'
+          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0-grpcurl-printnlp_gen_unary_orch_health'
 
 #################################### Configmap ##########################################
 ---
@@ -102,7 +102,10 @@ data:
       provider: nlp
       service:
         hostname: gpt2-predictor.test.svc.cluster.local 
-        port: 80
+        port: 8085
+        grpc:
+          service_name: "caikit.runtime.Nlp.NlpService"
+          method_name: "TextGenerationTaskPredict"
     detectors:
       regex:
         type: text_contents
@@ -111,8 +114,8 @@ data:
           port: 80
         chunker_id: whole_doc_chunker
         default_threshold: 0.5
-    passthrough_headers:
-      - Authorization
+    # passthrough_headers:
+    #   - Authorization
 #################################### Service Spec #######################################
 ---
 kind: Service

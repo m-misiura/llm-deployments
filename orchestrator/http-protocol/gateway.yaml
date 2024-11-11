@@ -1,0 +1,50 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: knative-local-gateway
+  namespace: istio-system
+spec:
+  selector:
+    knative: ingressgateway
+  servers:
+  - hosts:
+    - '*.svc.cluster.local'
+    port:
+      name: https
+      number: 8081
+      protocol: HTTPS
+    tls:
+      mode: ISTIO_MUTUAL
+  - hosts:
+    - '*.svc.cluster.local'
+    port:
+      name: http
+      number: 8082
+      protocol: HTTP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: knative-local-gateway
+  namespace: istio-system
+spec:
+  clusterIP: 172.30.142.232
+  clusterIPs:
+  - 172.30.142.232
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http2
+    port: 80
+    protocol: TCP
+    targetPort: 8081
+  - name: http
+    port: 8082
+    protocol: TCP
+    targetPort: 8082
+  selector:
+    knative: ingressgateway
+  sessionAffinity: None
+  type: ClusterIP

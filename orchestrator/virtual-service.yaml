@@ -1,0 +1,63 @@
+# DestinationRule for GPT-2 Predictor
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: gpt2-predictor-direct
+  namespace: test
+spec:
+  host: gpt2-predictor-00001.test.svc.cluster.local
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+---
+# DestinationRule for Regex Detector
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: regex-detector-predictor-direct
+  namespace: test
+spec:
+  host: regex-detector-predictor-00001.test.svc.cluster.local
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+---
+# VirtualService for direct GPT-2 access
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: gpt2-predictor-direct
+  namespace: test
+spec:
+  hosts:
+  - gpt2-predictor.test.svc.cluster.local
+  gateways:
+  - mesh
+  http:
+  - match:
+    - port: 8085
+    route:
+    - destination:
+        host: gpt2-predictor-00001.test.svc.cluster.local
+        port:
+          number: 81
+---
+# VirtualService for direct Regex Detector access
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: regex-detector-predictor-direct
+  namespace: test
+spec:
+  hosts:
+  - regex-detector-predictor.test.svc.cluster.local
+  gateways:
+  - mesh
+  http:
+  - match:
+    - port: 8000
+    route:
+    - destination:
+        host: regex-detector-predictor-00001.test.svc.cluster.local
+        port:
+          number: 80

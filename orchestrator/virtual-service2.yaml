@@ -1,0 +1,79 @@
+# VirtualService for GPT2 direct access
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: gpt2-predictor-direct
+  namespace: test
+spec:
+  hosts:
+  - gpt2-predictor.test.svc.cluster.local
+  gateways:
+  - mesh
+  - istio-system/kserve-local-gateway
+  http:
+  - match:
+    - authority:
+        prefix: "gpt2-predictor.test"
+      gateways:
+        - mesh
+    route:
+    - destination:
+        host: gpt2-predictor-00001.test.svc.cluster.local
+        port:
+          number: 81
+    headers:
+      request:
+        set:
+          Host: gpt2-predictor.test.svc.cluster.local
+  - match:
+    - gateways:
+        - istio-system/kserve-local-gateway
+    route:
+    - destination:
+        host: knative-local-gateway.istio-system.svc.cluster.local
+        port:
+          number: 80
+    headers:
+      request:
+        set:
+          Host: gpt2-predictor.test.svc.cluster.local
+---
+# VirtualService for Regex Detector direct access
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: regex-detector-predictor-direct
+  namespace: test
+spec:
+  hosts:
+  - regex-detector-predictor.test.svc.cluster.local
+  gateways:
+  - mesh
+  - istio-system/kserve-local-gateway
+  http:
+  - match:
+    - authority:
+        prefix: "regex-detector-predictor.test"
+      gateways:
+        - mesh
+    route:
+    - destination:
+        host: regex-detector-predictor-00001.test.svc.cluster.local
+        port:
+          number: 80
+    headers:
+      request:
+        set:
+          Host: regex-detector-predictor.test.svc.cluster.local
+  - match:
+    - gateways:
+        - istio-system/kserve-local-gateway
+    route:
+    - destination:
+        host: knative-local-gateway.istio-system.svc.cluster.local
+        port:
+          number: 80
+    headers:
+      request:
+        set:
+          Host: regex-detector-predictor.test.svc.cluster.local

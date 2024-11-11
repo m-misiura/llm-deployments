@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: gpt2-predictor
+  namespace: test
+spec:
+  host: gpt2-predictor-00001-private.test.svc.cluster.local
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    portLevelSettings:
+    - port:
+        number: 8085
+      tls:
+        mode: DISABLE
+    connectionPool:
+      http:
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
