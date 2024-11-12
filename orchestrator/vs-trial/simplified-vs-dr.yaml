@@ -1,0 +1,88 @@
+# VirtualService for GPT-2 service
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: gpt2-predictor-vs
+  namespace: test
+spec:
+  hosts:
+  - gpt2-predictor.test.svc.cluster.local
+  gateways:
+  - knative-serving/knative-local-gateway
+  http:
+  - match:
+    - uri:
+        exact: "/grpc.health.v1.Health/Check"
+    - uri:
+        prefix: "/caikit.runtime.Nlp.NlpService"
+    route:
+    - destination:
+        host: gpt2-predictor.test.svc.cluster.local
+        port:
+          number: 80
+---
+# VirtualService for regex detector
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: regex-detector-vs
+  namespace: test
+spec:
+  hosts:
+  - regex-detector-predictor.test.svc.cluster.local
+  gateways:
+  - knative-serving/knative-local-gateway
+  http:
+  - match:
+    - uri:
+        exact: "/grpc.health.v1.Health/Check"
+    route:
+    - destination:
+        host: regex-detector-predictor.test.svc.cluster.local
+        port:
+          number: 80
+---
+# Gateway configuration
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: grpc-gateway
+  namespace: test
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: grpc
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+# DestinationRule for GPT-2
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: gpt2-predictor-dr
+  namespace: test
+spec:
+  host: gpt2-predictor.test.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      http:
+        http2MaxRequests: 1000
+        maxRequestsPerConnection: 100
+---
+# DestinationRule for regex detector
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: regex-detector-dr
+  namespace: test
+spec:
+  host: regex-detector-predictor.test.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL

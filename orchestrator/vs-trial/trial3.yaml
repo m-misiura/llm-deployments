@@ -1,0 +1,47 @@
+# Update the existing gpt2-predictor-mesh VirtualService
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: gpt2-predictor-mesh
+  namespace: test
+spec:
+  hosts:
+  - gpt2-predictor.test
+  - gpt2-predictor.test.svc
+  - gpt2-predictor.test.svc.cluster.local
+  gateways:
+  - mesh
+  http:
+  - match:
+    - uri:
+        prefix: /grpc.health.v1.Health
+    - uri:
+        prefix: /caikit.runtime.Nlp.NlpService
+    route:
+    - destination:
+        host: gpt2-predictor-00001-private.test.svc.cluster.local # Use the private service directly
+        port:
+          number: 80
+---
+# Update the regex-detector-predictor-mesh VirtualService
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: regex-detector-predictor-mesh
+  namespace: test
+spec:
+  hosts:
+  - regex-detector-predictor.test
+  - regex-detector-predictor.test.svc
+  - regex-detector-predictor.test.svc.cluster.local
+  gateways:
+  - mesh
+  http:
+  - match:
+    - uri:
+        prefix: /grpc.health.v1.Health
+    route:
+    - destination:
+        host: regex-detector-predictor-00001-private.test.svc.cluster.local # Use the private service directly
+        port:
+          number: 80

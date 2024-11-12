@@ -1,0 +1,94 @@
+# VirtualService for orchestrator to GPT-2 communication
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: fms-orchestr8-nlp-vs
+  namespace: test
+spec:
+  hosts:
+  - gpt2-predictor.test.svc.cluster.local
+  gateways:
+  - istio-system/kserve-local-gateway
+  - knative-serving/knative-ingress-gateway
+  - knative-serving/knative-local-gateway
+  - mesh
+  http:
+  - match:
+    - uri:
+        prefix: "/grpc.health.v1.Health"
+    - uri:
+        prefix: "/caikit.runtime.Nlp.NlpService"
+    route:
+    - destination:
+        host: gpt2-predictor.test.svc.cluster.local
+        port:
+          number: 80
+    corsPolicy:
+      allowOrigins:
+        - regex: ".*"
+      allowMethods:
+        - POST
+        - GET
+        - OPTIONS
+      allowHeaders:
+        - grpc-timeout
+        - content-type
+        - keep-alive
+        - user-agent
+        - cache-control
+        - content-type
+        - content-transfer-encoding
+        - custom-header-1
+        - x-accept-content-transfer-encoding
+        - x-accept-response-streaming
+        - x-user-agent
+        - x-grpc-web
+    timeout: 300s
+---
+# VirtualService for orchestrator to regex detector communication
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: fms-orchestr8-regex-vs
+  namespace: test
+spec:
+  hosts:
+  - regex-detector-predictor.test.svc.cluster.local
+  gateways:
+  - mesh
+  http:
+  - route:
+    - destination:
+        host: regex-detector-predictor.test.svc.cluster.local
+        port:
+          number: 80
+---
+# DestinationRule for GPT-2 predictor
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: gpt2-predictor-dr
+  namespace: test
+spec:
+  host: gpt2-predictor.test.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      http:
+        http2MaxRequests: 1000
+        maxRequestsPerConnection: 100
+      tcp:
+        maxConnections: 100
+---
+# DestinationRule for regex detector
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: regex-detector-dr
+  namespace: test
+spec:
+  host: regex-detector-predictor.test.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL

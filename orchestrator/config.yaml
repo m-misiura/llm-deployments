@@ -101,11 +101,11 @@ data:
     generation:
       provider: nlp
       service:
-        hostname: gpt2-predictor.test.svc.cluster.local 
-        port: 8085
-        grpc:
-          service_name: "caikit.runtime.Nlp.NlpService"
-          method_name: "TextGenerationTaskPredict"
+        hostname: gpt2-test.apps.rosa.mac-trustyai.swih.p3.openshiftapps.com
+        port: 80
+        # grpc:
+        #   service_name: "caikit.runtime.Nlp.NlpService"
+        #   method_name: "TextGenerationTaskPredict"
     detectors:
       regex:
         type: text_contents
