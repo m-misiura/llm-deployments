@@ -103,9 +103,6 @@ data:
       service:
         hostname: gpt2-predictor.test.svc.cluster.local 
         port: 8085
-        grpc:
-          service_name: "caikit.runtime.Nlp.NlpService"
-          method_name: "TextGenerationTaskPredict"
     detectors:
       regex:
         type: text_contents
