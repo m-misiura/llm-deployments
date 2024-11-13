@@ -1,0 +1,46 @@
+# Justfile
+
+# Set up a service account
+create-service-account:
+    oc apply -f service_account.yaml
+
+# Set up model container
+create-model-container:
+    oc apply -f llm_model_container.yaml
+
+# Set up vllm serving runtime
+create-caikit-serving-runtime:
+    oc apply -f caikit_standalone_runtime.yaml
+
+# Task to run vllm_serving_runtime.yaml
+create-caikit-isvc:
+    oc apply -f caikit_standalone_isvc.yaml
+
+# Task to run all YAML files
+create-caikit-all: create-service-account create-model-container create-caikit-serving-runtime create-caikit-isvc
+
+# Delete a service account
+delete-service-account:
+    oc delete -f service_account.yaml
+
+# Delete model container
+delete-model-container:
+    oc delete -f llm_model_container.yaml
+
+# Delete vllm serving runtime
+delete-caikit-serving-runtime:
+    oc delete -f caikit_standalone_runtime.yaml
+
+# Delete vllm isvc
+delete-caikit-isvc:
+    oc delete -f caikit_standalone_isvc.yaml
+
+# Task to delete all YAML files
+delete-caikit-all: delete-service-account delete-model-container delete-caikit-serving-runtime delete-caikit-isvc
+
+# Task to run curl command with a user-specified prompt
+curl-model-endpoint prompt:
+    # Ensure the script is executable
+    chmod +x curl_model_endpoint.sh
+    # Run the shell script with the prompt
+    ./curl_model_endpoint.sh "{{prompt}}"
