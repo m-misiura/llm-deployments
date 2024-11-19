@@ -148,3 +148,19 @@ curl -v -H "Content-Type: application/json" \
     }
 }' http://localhost:8033/api/v1/task/classification-with-text-generation
 ```
+
+```bash
+curl -v -H "Content-Type: application/json" -H "Authorization: Bearer $SA_TOKEN" --data '{
+    "model_id": "gpt2",
+    "inputs": "some email abc123@something.com",
+    "guardrail_config": {
+        "input": {
+            "masks": [],
+            "models": {"regex": {}}
+        },
+        "output": {
+            "models": {}
+        }
+    }
+}' http://localhost:8033/api/v1/task/classification-with-text-generation
+```
