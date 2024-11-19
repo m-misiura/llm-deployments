@@ -102,7 +102,7 @@ data:
     # generation:
     #   provider: nlp
       service:
-        hostname: gpt-2-predictor.test.svc.cluster.local
+        hostname: gpt2-predictor.test.svc.cluster.local
         port: 8080
     detectors:
       regex:

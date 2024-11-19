@@ -1,11 +1,11 @@
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: gpt-2
+  name: gpt2
   labels:
     opendatahub.io/dashboard: 'true'
   annotations:
-    openshift.io/display-name: gpt-2
+    openshift.io/display-name: gpt2
     security.opendatahub.io/enable-auth: 'false'
     serving.knative.openshift.io/enablePassthrough: 'true'
     sidecar.istio.io/inject: 'true'
