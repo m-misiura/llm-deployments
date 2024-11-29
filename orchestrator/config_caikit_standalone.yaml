@@ -5,7 +5,6 @@ metadata:
   name: fms-orchestr8-nlp
   annotations:
     configmap.reloader.stakater.com/reload: 'fms-orchestr8-config'
-    sidecar.istio.io/inject: "true"  # Enable Istio sidecar injection
   labels:
     app: fmstack-nlp
     component: fms-orchestr8-nlp
@@ -84,7 +83,7 @@ spec:
               mountPath: /config/config.yaml
               subPath: config.yaml
           terminationMessagePolicy: File
-          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:0.7.0-grpcurl-printnlp_gen_unary_orch_health'
+          image: 'quay.io/rh-ee-mmisiura/fms-orchestr8-nlp:main_79434f2'
 
 #################################### Configmap ##########################################
 ---
